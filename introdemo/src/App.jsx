@@ -1,35 +1,56 @@
-const Hello = ({name, age}) => {
-  const bornYear = () =>
-  {
-    const yearNow = new Date().getFullYear()
-    return yearNow - age
-  }
 
 
-
-  return (
-    <div>
-      <p>
-        Hello {name}, you are {age} years old
-      </p>
-      <p>
-        So you were probably born in {bornYear()}
-      </p>
-    </div>
-  )
-}
+import { useState } from 'react'
 
 const App = () => {
-  const name = 'Peter'
-  const age = 10
+  const [clicks, setClicks] = useState({
+    left: 0, right: 0
+  })
+  const [allClicks, setAll] = useState([])
+  const [total, setTotal] = useState(0)
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    const updatedLeft = clicks.left + 1
+    setClicks({...clicks, left: updatedLeft})
+    setTotal(updatedLeft + clicks.right);
+  }
+
+  const handleRightClick = () => {
+    setAll(allClicks.concat('R'))
+    const updatedRight = clicks.right + 1
+    setClicks({...clicks, right: updatedRight})
+    setTotal(clicks.left + updatedRight);
+  }
 
   return (
     <div>
-      <h1>Greetings</h1>
-      <Hello name="Maya" age={26 + 10} />
-      <Hello name={name} age={age} />
+      {clicks.left}
+      <button onClick={handleLeftClick}>left</button>
+      <button onClick={handleRightClick}>right</button>
+      {clicks.right}
+      <History allClicks={allClicks}/>
+      <p>total {total}</p>
     </div>
   )
 }
+
+const History = (props) => {
+  if (props.allClicks.length === 0)
+  {
+    return (<div>the app is used by pressing the buttons</div>)
+  }
+
+  return(
+    <div>
+      button press history: {props.allClicks.join(' ')}
+    </div>
+    )
+}
+
+const Display = ({counter}) => <div>{counter}</div>
+
+const Button = ({onClick, text}) => <button onClick={onClick}>{text}</button>
+
 
 export default App
