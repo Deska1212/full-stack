@@ -23,11 +23,12 @@ const App = () => {
     setTotal(clicks.left + updatedRight);
   }
 
+
   return (
     <div>
       {clicks.left}
-      <button onClick={handleLeftClick}>left</button>
-      <button onClick={handleRightClick}>right</button>
+      <Button onClick={handleLeftClick} text="left"/>
+      <Button onClick={handleRightClick} text="right"/>
       {clicks.right}
       <History allClicks={allClicks}/>
       <p>total {total}</p>
