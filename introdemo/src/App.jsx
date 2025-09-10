@@ -1,57 +1,68 @@
-
-
 import { useState } from 'react'
 
 const App = () => {
-  const [clicks, setClicks] = useState({
-    left: 0, right: 0
-  })
-  const [allClicks, setAll] = useState([])
-  const [total, setTotal] = useState(0)
+  // save clicks of each button to its own state
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
 
-  const handleLeftClick = () => {
-    setAll(allClicks.concat('L'))
-    const updatedLeft = clicks.left + 1
-    setClicks({...clicks, left: updatedLeft})
-    setTotal(updatedLeft + clicks.right);
+
+  const handleGood = () => {
+    setGood(good + 1)
   }
 
-  const handleRightClick = () => {
-    setAll(allClicks.concat('R'))
-    const updatedRight = clicks.right + 1
-    setClicks({...clicks, right: updatedRight})
-    setTotal(clicks.left + updatedRight);
+  const handleNeutral = () => {
+    setNeutral(neutral + 1)
   }
 
+  const handleBad = () => {
+    setBad(bad + 1)
+  }
+
+  const total = good + neutral + bad
+  const average = total === 0 ? 0 : (good-bad) / total
+  const positivePercentage = total === 0 ? 0 : (good / total) * 100
 
   return (
     <div>
-      {clicks.left}
-      <Button onClick={handleLeftClick} text="left"/>
-      <Button onClick={handleRightClick} text="right"/>
-      {clicks.right}
-      <History allClicks={allClicks}/>
-      <p>total {total}</p>
+      <h1>give feedback</h1>
+
+      <Button onClick={handleGood} text="Good"/>
+      <Button onClick={handleNeutral} text="Neutral"/>
+      <Button onClick={handleBad} text="Bad"/>
+
+      <h1>statistics</h1>
+    
+      {(total != 0 ? (
+        <table>
+          <tbody>
+            <StatisticLine text="good" value={good}/>
+            <StatisticLine text="neutral" value={neutral}/>
+            <StatisticLine text="bad" value={bad}/>
+            <StatisticLine text="all" value={total}/>
+            <StatisticLine text="average" value={average.toFixed(2)}/>
+            <StatisticLine text="positive" value={positivePercentage.toFixed(2)}/>
+          </tbody>
+        </table>
+        ) : (<p>No feedback given</p>)
+
+      )}
+
+
+      
     </div>
   )
 }
 
-const History = (props) => {
-  if (props.allClicks.length === 0)
-  {
-    return (<div>the app is used by pressing the buttons</div>)
-  }
-
-  return(
-    <div>
-      button press history: {props.allClicks.join(' ')}
-    </div>
-    )
-}
-
-const Display = ({counter}) => <div>{counter}</div>
-
 const Button = ({onClick, text}) => <button onClick={onClick}>{text}</button>
 
+const StatisticLine = ({text, value}) => {
+  return (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
+  )
+}
 
 export default App
