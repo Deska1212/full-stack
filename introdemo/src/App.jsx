@@ -4,6 +4,9 @@ import Note from './Components/Note'
 const App = (props) => {
   const [notes, setNotes] = useState(props.notes)
   const [newNote, setNewNote] = useState('a new note...')
+  const [showAll, setShowAll] = useState(true)
+
+  const notesToShow = showAll ? notes : notes.filter(note => note.important)
 
   // Define function for us to use to add notes
   const addNote = (event) => {
@@ -26,8 +29,13 @@ const App = (props) => {
   return (
     <div>
       <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all'}
+        </button>
+      </div>
       <ul>
-        {notes.map((note) => (
+        {notesToShow.map((note) => (
           <Note key={note.id} note={note} />
         ))}
       </ul>
