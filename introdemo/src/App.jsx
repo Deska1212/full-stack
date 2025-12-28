@@ -1,41 +1,66 @@
 import { useState } from 'react'
-import Note from './Components/Note'
 
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
-  const [newNote, setNewNote] = useState ('a new note...')
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas' }
+  ]) 
+  const [newName, setNewName] = useState('')
 
-  // Define function for us to use to add notes
-  const addNote = (event) => {
+  const addName = (event) => {
     event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      important: Math.random() > 0.5,
-      id: String(notes.length + 1),
+    if (newName === "") return
+
+    let exists = persons.some(p => p.name === newName);
+    if(exists)
+    {
+      alert(`${newName} already exists in the phonebook`)
+      setNewName("")
+      return
     }
 
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
+
+    const newPerson = {
+      name: newName
+    }
+    
+    // This is some fuckery with React's state changes being batched
+    // Basically have to give it a function to update it and reference
+    // The updated variable if we are wanting to reference it straight away
+    setPersons(prev => {
+      const updated = prev.concat(newPerson)
+      console.log("Current Phonebook Array: ", updated)
+      return updated
+    })
+
+    setNewName('')
+    console.log("Added new person to Phonebook: ", newPerson.name);
   }
 
-  const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
+  const handleNewNameChange = (event) =>
+  {
+    setNewName(event.target.value)
   }
 
   return (
     <div>
-      <h1>Notes</h1>
-      <ul>
-        {notes.map((note) => (
-          <Note key={note.id} note={note} />
-        ))}
-      </ul>
-<form onSubmit={addNote}>
-  <input value={newNote} onChange={handleNoteChange}/>
-  <button type='submit'>save</button>
-</form>
-
+      <h2>Phonebook</h2>
+      <form>
+        <div>
+          name: <input value={newName} onChange={handleNewNameChange}/>
+        </div>
+        <div>debug: {newName}</div>
+        <div>
+          <button type="submit" onClick={addName}>add</button>
+        </div>
+      </form>
+      <h2>Numbers</h2>
+        <ul>
+          {
+            persons.map((person) => (
+              <li key={person.name}>{person.name}</li>
+            ))
+          }
+        </ul>
     </div>
   )
 }
