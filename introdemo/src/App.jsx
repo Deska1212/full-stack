@@ -1,10 +1,23 @@
 import { useState } from 'react'
+import Filter from './Components/Filter'
+import PersonList from './Components/PersonList'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '0451516929' }
   ]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+
+  const handleFilterChange = (event) =>
+  {
+    const textToFilterBy = event.target.value
+    console.log(textToFilterBy)
+    setFilter(textToFilterBy)
+  }
+
+
 
   const addName = (event) => {
     event.preventDefault()
@@ -20,7 +33,8 @@ const App = () => {
 
 
     const newPerson = {
-      name: newName
+      name: newName,
+      number: newNumber,
     }
     
     // This is some fuckery with React's state changes being batched
@@ -32,8 +46,10 @@ const App = () => {
       return updated
     })
 
+    console.log(`Added new person to phonebook with name: ${newName}, and number ${newNumber}`);
+    
     setNewName('')
-    console.log("Added new person to Phonebook: ", newPerson.name);
+    setNewNumber('')
   }
 
   const handleNewNameChange = (event) =>
@@ -41,26 +57,36 @@ const App = () => {
     setNewName(event.target.value)
   }
 
+  const handleNewNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const normalizedFilter = filter.trim().toLowerCase()
+  const personsToShow = normalizedFilter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(normalizedFilter))
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <h3>Search</h3>
+      <div>
+        <Filter value={filter} onChange={handleFilterChange} />
+      </div>
+
+      <h3>Add</h3>
       <form>
         <div>
           name: <input value={newName} onChange={handleNewNameChange}/>
         </div>
-        <div>debug: {newName}</div>
+        <div>
+          number : <input value={newNumber} onChange={handleNewNumberChange}/>
+        </div>
+        <div>debug: {`${newName} (${newNumber})`}</div>
         <div>
           <button type="submit" onClick={addName}>add</button>
         </div>
       </form>
       <h2>Numbers</h2>
-        <ul>
-          {
-            persons.map((person) => (
-              <li key={person.name}>{person.name}</li>
-            ))
-          }
-        </ul>
+        <PersonList persons={personsToShow}/>
     </div>
   )
 }
