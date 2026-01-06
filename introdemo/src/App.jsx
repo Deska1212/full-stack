@@ -1,22 +1,94 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState } from 'react'
+import Filter from './Components/Filter'
+import PersonList from './Components/PersonList'
+
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '0451516929' }
+  ]) 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+
+  const handleFilterChange = (event) =>
+  {
+    const textToFilterBy = event.target.value
+    console.log(textToFilterBy)
+    setFilter(textToFilterBy)
+  }
 
 
-const App = ({}) => {
-  const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true)
 
-  useEffect(() => {
-    console.log('effect')
+  const addName = (event) => {
+    event.preventDefault()
+    if (newName === "") return
 
-    axios.get("http://localhost:3001/notes")
-    .then(response => {
-      console.log('promose fulfilled')
-      setNotes(response.data)
+    let exists = persons.some(p => p.name === newName);
+    if(exists)
+    {
+      alert(`${newName} already exists in the phonebook`)
+      setNewName("")
+      return
+    }
+
+
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    }
+    
+    // This is some fuckery with React's state changes being batched
+    // Basically have to give it a function to update it and reference
+    // The updated variable if we are wanting to reference it straight away
+    setPersons(prev => {
+      const updated = prev.concat(newPerson)
+      console.log("Current Phonebook Array: ", updated)
+      return updated
     })
-  }, [])
-  console.log('render', notes.length, "notes")
+
+    console.log(`Added new person to phonebook with name: ${newName}, and number ${newNumber}`);
+    
+    setNewName('')
+    setNewNumber('')
+  }
+
+  const handleNewNameChange = (event) =>
+  {
+    setNewName(event.target.value)
+  }
+
+  const handleNewNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const normalizedFilter = filter.trim().toLowerCase()
+  const personsToShow = normalizedFilter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(normalizedFilter))
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <h3>Search</h3>
+      <div>
+        <Filter value={filter} onChange={handleFilterChange} />
+      </div>
+
+      <h3>Add</h3>
+      <form>
+        <div>
+          name: <input value={newName} onChange={handleNewNameChange}/>
+        </div>
+        <div>
+          number : <input value={newNumber} onChange={handleNewNumberChange}/>
+        </div>
+        <div>debug: {`${newName} (${newNumber})`}</div>
+        <div>
+          <button type="submit" onClick={addName}>add</button>
+        </div>
+      </form>
+      <h2>Numbers</h2>
+        <PersonList persons={personsToShow}/>
+    </div>
+  )
 }
 
 export default App
