@@ -1,14 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Filter from './Components/Filter'
 import PersonList from './Components/PersonList'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '0451516929' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    console.log('Use effect called')
+
+    
+    axios.get('http://localhost:3001/persons').then(response => {
+      console.log('Retrieved promise data')
+      setPersons(response.data)
+    }
+    )
+  }, [])
+
 
   const handleFilterChange = (event) =>
   {
