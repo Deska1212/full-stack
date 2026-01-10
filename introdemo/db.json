@@ -1,19 +1,9 @@
 {
   "persons": [
     {
-      "name": "Daniel Findell",
-      "number": "321",
-      "id": "3989"
-    },
-    {
-      "id": "a000",
-      "name": "Ollie Gett",
-      "number": "0404812381"
-    },
-    {
-      "name": "Arto",
-      "number": "69",
-      "id": "c2ca"
+      "name": "dan",
+      "number": "2",
+      "id": "9bba"
     }
   ]
 }

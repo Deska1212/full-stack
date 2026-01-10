@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './Components/Filter'
 import PersonList from './Components/PersonList'
 import noteService from './Services/phonebookService'
+import Notification from './Components/Notification'
 
 // Make it possible for users to delete entries from the phonebook
 
@@ -10,9 +11,11 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState({message: '', isError: false})
 
   useEffect(() => {
     console.log('Use effect called')
+
 
     // Retrieve the initial DB state from the server
     noteService.getAll().then(response => {
@@ -21,16 +24,6 @@ const App = () => {
     }
     )
   }, [])
-
-
-  const handleFilterChange = (event) =>
-  {
-    const textToFilterBy = event.target.value
-    console.log(textToFilterBy)
-    setFilter(textToFilterBy)
-  }
-
-  
 
   const addName = (event) => {
     event.preventDefault()
@@ -67,11 +60,13 @@ const App = () => {
           setPersons(prev => prev.map(p => p.id === updatedPerson.id ? updatedPerson : p))
           setNewName('')
           setNewNumber('')
+          setNotification({message: `${updatedPerson.name}'s number has been updated`, isError: false})
+          setTimeout(() => setNotification({message: '', isError: false}), 5000)
           console.log(`Updated number of ${updatedPerson.name} on client`)
         })
         .catch(error => {
          console.error('Update failed', error)
-         alert('Failed to update person on server.')
+         setNotification({message: `${newPerson.name} no longer exists on server`, isError: true})
       })
 
       return
@@ -93,11 +88,14 @@ const App = () => {
       setPersons(prev => prev.concat(person))
       setNewName('')
       setNewNumber('')
+      setNotification({message: `${person.name} added to Phonebook`, isError: false})
+      setTimeout(() => setNotification({message: '', isError: false}), 5000)
       console.log(`Created user: ${person.name} (${person.number})`)
     })
     .catch(error => {
         console.log('Create failed', error)
-        alert('Failed to add person to server.')
+        setNotification({message: `${newPerson.name} could not be created on the server`, isError: true})
+        setTimeout(() => setNotification({message: '', isError: false}), 5000)
       }
     )
   }
@@ -112,15 +110,19 @@ const App = () => {
       return
     }
 
+    const removedUser = persons.find(p => p.id === id)
+
     // Delete user from server
     noteService.remove(id).then(response => {
-      const removedUser = response.data
       setPersons(prev => prev.filter(p => p.id !== removedUser.id))
       console.log(`User ${removedUser.name} of ID ${removedUser.id} has been removed from server`)
+      setNotification({message: `${removedUser.name} removed from Phonebook`, isError: false})
+      setTimeout(() => setNotification({message: '', iserror: false}), 5000)
     })
     .catch(error => {
         console.error('Failed to delete user from server', error)
-        alert('Failed to delete user from server')
+        setNotification({message: `${removedUser.name} could not be found on the server`, isError: true})
+        setTimeout(() => setNotification({message: '', isError: false}), 5000)
       }
     )
 
@@ -138,12 +140,22 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const handleFilterChange = (event) =>
+  {
+    const textToFilterBy = event.target.value
+    console.log(textToFilterBy)
+    setFilter(textToFilterBy)
+  }
+
+
+
   const normalizedFilter = filter.trim().toLowerCase()
   const personsToShow = normalizedFilter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(normalizedFilter))
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification {...notification}/>
       <h3>Search</h3>
       <div>
         <Filter value={filter} onChange={handleFilterChange} />
