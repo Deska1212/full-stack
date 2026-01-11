@@ -3,7 +3,7 @@ import App from './App'
 import CountriesApp from './CountriesApp'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <CountriesApp/>
+  <App/>
 )
 
 
