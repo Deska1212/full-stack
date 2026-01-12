@@ -3,6 +3,7 @@ import Filter from './Components/Filter'
 import PersonList from './Components/PersonList'
 import noteService from './Services/phonebookService'
 import Notification from './Components/Notification'
+import axios from 'axios'
 
 // Make it possible for users to delete entries from the phonebook
 
@@ -22,7 +23,12 @@ const App = () => {
       console.log('Retrieved initial records from server')
       setPersons(response.data)
     }
-    )
+    ).catch(error => console.error(`Unable to get initial server state`, error))
+
+    // Test get persons from our own API
+    axios.get(`http://localhost:3001/api/persons`).then(response => {
+      console.log('Response from server: ', response)
+    }).catch(error => console.log(`Error from server: `, error))
   }, [])
 
   const addName = (event) => {
