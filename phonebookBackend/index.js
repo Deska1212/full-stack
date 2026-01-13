@@ -15,6 +15,9 @@ app.use(express.json())
 // Configure Morgan logging service
 app.use(morgan('common'))
 
+// Express static content
+app.use(express.static('dist'))
+
 // Hardcoded Data
 let persons = [
     { 
@@ -147,11 +150,12 @@ app.put(`/api/persons/:id`, (request, response) => {
   // Immutable update with map
   persons = persons.map(p => p.id === updatedPerson.id ? updatedPerson : p)
 
+  // Return the updated person with HTTP 200 'OK'
   response.status(200).json(updatedPerson)
 
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log('Server running on port', PORT)
 })
