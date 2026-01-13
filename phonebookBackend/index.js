@@ -3,6 +3,7 @@
 // Expressjs
 const express = require('express')
 const cors = require('cors')
+const morgan = require('morgan')
 const app = express()
 
 // Enable cors for all routes
@@ -10,6 +11,9 @@ app.use(cors())
 
 // Enable express json
 app.use(express.json())
+
+// Configure Morgan logging service
+app.use(morgan('common'))
 
 // Hardcoded Data
 let persons = [
@@ -113,6 +117,38 @@ app.post(`/api/persons`, (request, response) => {
   persons = persons.concat(person)
 
   response.status(201).json(person)
+})
+
+app.put(`/api/persons/:id`, (request, response) => {
+  
+  const id = request.params.id
+  const {name, number} = request.body
+  
+  // Validate Inputs
+  if(!name || !number)
+  {
+    return response.status(400).json({error: 'Name and number are required'})
+  }
+
+  // Check if person exists
+  const exists = persons.find(p => p.id === id);
+  if(!exists)
+  {
+    return response.status(404).json({error: 'Unable to find user on server'})
+  }
+
+  const updatedPerson = 
+  {
+    id,
+    name,
+    number
+  }
+
+  // Immutable update with map
+  persons = persons.map(p => p.id === updatedPerson.id ? updatedPerson : p)
+
+  response.status(200).json(updatedPerson)
+
 })
 
 const PORT = 3001
