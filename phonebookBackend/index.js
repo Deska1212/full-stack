@@ -122,38 +122,39 @@ app.post(`/api/persons`, (request, response) => {
   response.status(201).json(person)
 })
 
-app.put(`/api/persons/:id`, (request, response) => {
+// Change an entry
+// app.put(`/api/persons/:id`, (request, response) => {
   
-  const id = request.params.id
-  const {name, number} = request.body
+//   const id = request.params.id
+//   const {name, number} = request.body
   
-  // Validate Inputs
-  if(!name || !number)
-  {
-    return response.status(400).json({error: 'Name and number are required'})
-  }
+//   // Validate Inputs
+//   if(!name || !number)
+//   {
+//     return response.status(400).json({error: 'Name and number are required'})
+//   }
 
-  // Check if person exists
-  const exists = persons.find(p => p.id === id);
-  if(!exists)
-  {
-    return response.status(404).json({error: 'Unable to find user on server'})
-  }
+//   // Check if person exists
+//   const exists = persons.find(p => p.id === id);
+//   if(!exists)
+//   {
+//     return response.status(404).json({error: 'Unable to find user on server'})
+//   }
 
-  const updatedPerson = 
-  {
-    id,
-    name,
-    number
-  }
+//   const updatedPerson = 
+//   {
+//     id,
+//     name,
+//     number
+//   }
 
-  // Immutable update with map
-  persons = persons.map(p => p.id === updatedPerson.id ? updatedPerson : p)
+//   // Immutable update with map
+//   persons = persons.map(p => p.id === updatedPerson.id ? updatedPerson : p)
 
-  // Return the updated person with HTTP 200 'OK'
-  response.status(200).json(updatedPerson)
+//   // Return the updated person with HTTP 200 'OK'
+//   response.status(200).json(updatedPerson)
 
-})
+// })
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
